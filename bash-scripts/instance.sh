@@ -20,7 +20,7 @@ apt-get update
 apt-get install git -y
 
 #Clonar el repositorio
-git pull 
+git pull https://github.com/jcotoBan/lke-demo-simple.git
 
 #Install terraform
 
