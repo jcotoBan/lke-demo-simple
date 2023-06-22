@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: demopvc
+spec:
+  resources:
+    requests:  
+      storage: 8Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: linode-block-storage

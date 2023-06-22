@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: demoapp
+  name: demoapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demoapp
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: demoapp
+    spec:
+      containers:
+      - image: koton00beng/protoapp
+        name: protoapp
+        ports:
+        - containerPort: 5000
+        resources: {}
+        volumeMounts:
+        - mountPath: "/mnt/data/files"
+          name: demovolume
+      volumes:
+      - name: demovolume
+        persistentVolumeClaim:
+          claimName: demopvc
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: demoapp
+  name: demoapp
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: demoapp.jccsutils.net
+    external-dns.alpha.kubernetes.io/ttl: "600" #optional
+spec:
+  ports:
+  - port: 5000
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: demoapp
+  type:
+    LoadBalancer
+status:
+  loadBalancer: {}

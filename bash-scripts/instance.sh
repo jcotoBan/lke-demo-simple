@@ -12,15 +12,9 @@ sed -i 's/^PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 systemctl restart sshd
 
-#jq install
-apt install jq -y
-
 #Git Install
 apt-get update
 apt-get install git -y
-
-#Clonar el repositorio
-git pull https://github.com/jcotoBan/lke-demo-simple.git
 
 #Install terraform
 
@@ -32,8 +26,8 @@ apt update && apt-get install terraform
 
 #Install kubectl 
 
-apt-get update && apt-get install -y ca-certificates curl && curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" |  tee /etc/apt/sources.list.d/kubernetes.list
+apt-get update && apt-get install -y ca-certificates curl && curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 apt-get update && apt-get install -y kubectl
 
 #install helm
@@ -45,20 +39,23 @@ apt-get install helm -y
 
 #Terraform Setup
 
-terraform -chdir=lke-demo-simple/clusterstf init
+terraform -chdir=./clusterstf init
 
-terraform -chdir=lke-demo-simple/clusterstf plan \
+terraform -chdir=./clusterstf plan \
  -var-file="clusters.tfvars"
 
-terraform -chdir=lke-demo-simple/clusterstf apply -auto-approve \
+terraform -chdir=./clusterstf apply -auto-approve \
  -var-file="clusters.tfvars"
  
 #Kubernetes clusters setup
 
-echo 'export KUBE_VAR="$(terraform output -state=lke-demo-simple/clusterstf/terraform.tfstate kubeconfig_cluster)"' >> .bashrc && source .bashrc && echo $KUBE_VAR | base64 -di > kubeconfig_cluster.yaml
+echo 'export KUBE_VAR="$(terraform output -state=./clusterstf/terraform.tfstate kubeconfig_cluster)"' >> .bashrc && source .bashrc && echo $KUBE_VAR | base64 -di > kubeconfig_cluster.yaml
 chmod 600 kubeconfig_cluster.yaml
-echo 'export KUBECONFIG=kubeconfig_cluster.yaml' >> .bashrc
+mkdir .kube
+mv kubeconfig_cluster.yaml ~/.kube/
+echo 'export KUBECONFIG=~/.kube/kubeconfig_cluster.yaml' >> .bashrc
 echo 'alias k=kubectl' >> .bashrc
-source ~/.bashrc
+echo 'export LINODE_TOKEN=$(cat ~/pat_token)' >> .bashrc
+#Ejecutar source ~/.bashrc
 
 

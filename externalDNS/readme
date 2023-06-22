@@ -1,0 +1,12 @@
+Para utilizar externaldns con akamai edge dns, es necesario
+crear un secret en kubernetes con los parametros de un usuario api de akamai control center.
+Este usuario debe tener accesos administrativos para Akamai Edge dns.
+https://techdocs.akamai.com/developer/docs/set-up-authentication-credentials
+
+
+kubectl create secret generic external-dns  \
+--from-literal=EXTERNAL_DNS_AKAMAI_SERVICECONSUMERDOMAIN=<akamai host>  \
+--from-literal=EXTERNAL_DNS_AKAMAI_CLIENT_TOKEN=<akamai client_token>  \
+--from-literal=EXTERNAL_DNS_AKAMAI_CLIENT_SECRET=<akamai client_secret>  \
+--from-literal=EXTERNAL_DNS_AKAMAI_ACCESS_TOKEN=<akamai access_token> 
+

@@ -8,7 +8,7 @@ lke_cluster = [
         pools = [
             {
                 type : "g6-standard-2"
-                count : 2
+                count : 1
             }
         ]
     }
