@@ -43,6 +43,29 @@ authorized_keys = [linode_sshkey.instancekey.ssh_key]
     }
   }
 
+   provisioner "file"{ 
+    source = "../externalDNS"
+    destination = "/root/"
+    connection {
+      type = "ssh"
+      host = self.ip_address
+      user = "root"
+      password = var.root_pass
+    }
+  }
+
+
+    provisioner "file"{ 
+    source = "../demoManifests"
+    destination = "/root/"
+    connection {
+      type = "ssh"
+      host = self.ip_address
+      user = "root"
+      password = var.root_pass
+    }
+  }
+
     provisioner "remote-exec"{
     inline = [
       "export LINODE_TOKEN=${var.token}",
